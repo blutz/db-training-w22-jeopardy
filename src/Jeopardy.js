@@ -9,20 +9,21 @@ function Jeopardy() {
   const [data, setData] = useState(null)
   const [score, setScore] = useState(0)
 
-  useEffect(() => {
-    (async () => {
-      try {
-        setData((await (await fetch(URL)).json())[0])
-      } catch (e) {
-        setError(e.message)
-      } finally {
-        setLoading(false)
-      }
-    })()
-  }, [])
+  async function loadData() {
+    try {
+      setData((await (await fetch(URL)).json())[0])
+    } catch (e) {
+      setError(e.message)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  useEffect(() => { loadData() }, [])
 
   function changeScore(amount=0) {
     setScore(score+amount)
+    loadData()
   }
 
   if(loading) {
@@ -30,6 +31,7 @@ function Jeopardy() {
   } else if(data) {
     return <div>
       <JeopardyQuestion
+        key={data.id}
         data={data}
         onRight={() => changeScore(data.value)}
         onWrong={() => changeScore()}
