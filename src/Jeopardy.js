@@ -7,6 +7,7 @@ function Jeopardy() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
   const [data, setData] = useState(null)
+  const [score, setScore] = useState(0)
 
   useEffect(() => {
     (async () => {
@@ -20,10 +21,22 @@ function Jeopardy() {
     })()
   }, [])
 
+  function changeScore(amount=0) {
+    setScore(score+amount)
+  }
+
   if(loading) {
     return <div>Loading&hellip;</div>
   } else if(data) {
-    return <div><JeopardyQuestion data={data} /></div>
+    return <div>
+      <JeopardyQuestion
+        data={data}
+        onRight={() => changeScore(data.value)}
+        onWrong={() => changeScore()}
+      />
+      <hr />
+      <div>Score: ${score}</div>
+    </div>
   } else {
     return <div className='error'>Error: {JSON.stringify(error || 'Undefined')}</div>
   }
